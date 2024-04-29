@@ -1,0 +1,38 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  get-directories:
+    runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.directories.outputs.dirs }}
+    steps:
+      - name: Get directories (each corresponds to an exercise)
+        id: directories
+        run: |
+          targets=($(ls -d */))
+          
+          echo "dirs=jq --compact-output --null-input '$ARGS.positional' --args -- '${dirs[@]}'" >> "$GITHUB_OUTPUT"
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    needs: get-directories
+    strategy:
+      matrix:
+        target-dir: ${{ toJSON(needs.get-directories.outputs.dirs) }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build
+        run: cd ${{ matrix.target-dir }} && cargo build --verbose
+        
+      - name: Run tests
+        run: cd ${{ matrix.target-dir }} && cargo test --verbose
