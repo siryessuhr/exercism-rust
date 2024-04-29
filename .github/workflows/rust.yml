@@ -21,8 +21,8 @@ jobs:
         id: directories
         run: |
           targets=($(ls -d */))
-          echo $targets
-          transformed=$(jq --compact-output --null-input '$ARGS.positional' --args -- '${targets[@]}')
+          echo ${targets[@]}
+          transformed=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${targets[@]}")
           echo $transformed
           
           echo "dirs=${transformed}" >> "$GITHUB_OUTPUT"
