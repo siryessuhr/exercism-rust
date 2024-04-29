@@ -40,4 +40,4 @@ jobs:
         
       - name: Run tests
         working-directory: ${{ matrix.target-dir }}
-        run: cargo test --verbose
+        run: cargo test --verbose -- --include-ignored
