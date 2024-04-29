@@ -21,9 +21,7 @@ jobs:
         id: directories
         run: |
           targets=($(ls -d */))
-          echo ${targets[@]}
           transformed=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${targets[@]}")
-          echo $transformed
           
           echo "dirs=${transformed}" >> "$GITHUB_OUTPUT"
 
@@ -32,12 +30,14 @@ jobs:
     needs: get-directories
     strategy:
       matrix:
-        target-dir: ${{ toJSON(needs.get-directories.outputs.dirs) }}
+        target-dir: ${{ fromJSON(needs.get-directories.outputs.dirs) }}
     steps:
       - uses: actions/checkout@v4
       
       - name: Build
-        run: cd ${{ matrix.target-dir }} && cargo build --verbose
+        working-directory: ${{ matrix.target-dir }}
+        run: cargo build --verbose
         
       - name: Run tests
-        run: cd ${{ matrix.target-dir }} && cargo test --verbose
+        working-directory: ${{ matrix.target-dir }}
+        run: cargo test --verbose
