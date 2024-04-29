@@ -22,7 +22,7 @@ jobs:
         run: |
           targets=($(ls -d */))
           
-          echo "dirs=jq --compact-output --null-input '$ARGS.positional' --args -- '${dirs[@]}'" >> "$GITHUB_OUTPUT"
+          echo "dirs=$(jq --compact-output --null-input '$ARGS.positional' --args -- '${targets[@]}')" >> "$GITHUB_OUTPUT"
 
   build-and-test:
     runs-on: ubuntu-latest
